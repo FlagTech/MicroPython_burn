@@ -84,19 +84,15 @@ if not "%test_script%"=="" (
     echo -------------------------------------------------
     echo 測試韌體
     echo -------------------------------------------------
-    set error="NO"
+    set error="YES"
     for /f "tokens=*" %%r in ('.\python\scripts\ampy.exe -p %port% run %test_script%') do (
         echo 測試程式執行結果：%%r
-        if not "%%r"=="hello" (
-            echo !! 測試韌體時發生錯誤
-            set error="YES"
-            goto error_check
+        if "%%r"=="hello" (
+            set error="NO"
         )
     )
-    if errorlevel 1 (
-        set error="YES"
-        goto error_check
-    )
+    if errorlevel 1 set error="YES"
+    if "%error%"=="YES" goto error_check
     echo OK
 )
 
