@@ -85,7 +85,7 @@ if not "%test_script%"=="" (
     echo 測試韌體
     echo -------------------------------------------------
     set error="YES"
-    for /f "tokens=*" %%r in ('.\python\scripts\ampy.exe -p %port% run %test_script%') do (
+    for /f "tokens=*" %%r in ('.\python\python.exe .\python\scripts\ampy.exe -p %port% run %test_script%') do (
         echo 測試程式執行結果：%%r
         if "%%r"=="hello" (
             set error="NO"
@@ -101,7 +101,7 @@ if not "%wifi_script%"=="" (
     echo 測試 Wi-Fi
     echo -------------------------------------------------
     set error="YES"
-    for /f "tokens=*" %%r in ('.\python\scripts\ampy.exe -p %port% run %wifi_script%') do (
+    for /f "tokens=*" %%r in ('.\python\python.exe .\python\scripts\ampy.exe -p %port% run %wifi_script%') do (
         if not "%%r"=="" echo %%r
         if "%%r"=="**success**" (
             set error="NO"
@@ -118,7 +118,7 @@ if exist .\upload (
     echo -------------------------------------------------
     for /R .\upload %%f in (*) do (
         echo 上傳 %%f 檔案
-        .\python\scripts\ampy.exe -p %port% put %%f
+        .\python\python.exe .\python\scripts\ampy.exe -p %port% put %%f
         if errorlevel 1 (
             echo !! 上傳 %%f 檔案時發生錯誤
             set error="YES"
