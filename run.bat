@@ -58,20 +58,27 @@ if /I "%fname:~0,7%"=="ESP8266" (
     echo 燒錄韌體
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py -p %port% --baud 460800 write_flash --flash_size=detect -fm dio 0 %fname%
+
+    if errorlevel 1 (
+        echo !! 燒錄韌體時發生錯誤
+        set error="YES"
+        goto error_check
+    )
+    echo OK
 )
 if /I "%fname:~0,5%"=="ESP32" (
     echo -------------------------------------------------
     echo 燒錄韌體
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py --chip esp32 --port %port% write_flash -z 0x1000 %fname%
-)
 
-if errorlevel 1 (
-    echo !! 燒錄韌體時發生錯誤
-    set error="YES"
-    goto error_check
+    if errorlevel 1 (
+        echo !! 燒錄韌體時發生錯誤
+        set error="YES"
+        goto error_check
+    )
+    echo OK
 )
-echo OK
 
 if not "%test_script%"=="" (
     echo -------------------------------------------------
@@ -90,8 +97,8 @@ if not "%test_script%"=="" (
         set error="YES"
         goto error_check
     )
+    echo OK
 )
-echo OK
 
 if not "%wifi_script%"=="" (
     echo -------------------------------------------------
@@ -106,8 +113,8 @@ if not "%wifi_script%"=="" (
     )
     if errorlevel 1 set error="YES"
     if "%error%"=="YES" goto error_check
+    echo OK
 )
-echo OK
 
 if exist .\upload (
     echo -------------------------------------------------
@@ -122,8 +129,8 @@ if exist .\upload (
             goto error_check
         )
     )
+    echo OK
 )
-echo OK
 
 echo -------------------------------------------------
 
