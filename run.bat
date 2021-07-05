@@ -1,27 +1,17 @@
 @echo off
+REM æ”¹ç”¨ UTF8 ç·¨ç¢¼
+chcp 65001
 setlocal EnableDelayedExpansion
 set fname=
 set dummy=
-set test_script=
-set wifi_script=
 set /a total = 0
 
-REM ¬İ¦³¨S¦³¥H test ¶}ÀY¿N¿ı«á´ú¸Õ¥Îªº py ÀÉ
-for %%f in (test*.py) do (
-    set test_script=%%f
-)
-
-REM ¬İ¦³¨S¦³¥H wifi ¶}ÀY¿N¿ı«á´ú¸Õ¥Îªº py ÀÉ
-for %%f in (wifi*.py) do (
-    set wifi_script=%%f
-)
-
-REM ¥ı¬İ¦³¨S¦³ esp8266 ¶}ÀYÀÉ¦Wªº¶´ÅéÀÉ
+REM å…ˆçœ‹æœ‰æ²’æœ‰ esp8266 é–‹é ­æª”åçš„éŸŒé«”æª”
 for %%f in (esp8266*.bin) do (
     set fname=%%f
     goto start
 )
-REM ¦A¬İ¦³¨S¦³ esp32 ¶}ÀYÀÉ¦Wªº¶´ÅéÀÉ
+REM å†çœ‹æœ‰æ²’æœ‰ esp32 é–‹é ­æª”åçš„éŸŒé«”æª”
 for %%f in (esp32*.bin) do (
     set fname=%%f
     goto start
@@ -29,25 +19,23 @@ for %%f in (esp32*.bin) do (
 
 :start
 echo -------------------------------------------------
-echo ¶´ÅéÀÉ  ¡G%fname%
-echo ´ú¸ÕÀÉ  ¡G%test_script%
-echo Wi-Fi ÀÉ¡G%wifi_script%
-set /p port="¿é¤J³s±µ°ğ (¿é¤J q Â÷¶})¡G"
+echo éŸŒé«”æª”  ï¼š%fname%
+set /p port="è¼¸å…¥é€£æ¥åŸ  (è¼¸å…¥ q é›¢é–‹)ï¼š"
 if "%port%"=="q" goto end
 
 :next
 
-REM ²M°£ errorlevel
+REM æ¸…é™¤ errorlevel
 (call )
 set error="NO"
 
 if not "%fname%"=="" (
     echo -------------------------------------------------
-    echo ²M°£ flash
+    echo æ¸…é™¤ flash
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py -p %port% erase_flash
     if errorlevel 1 (
-        echo !! ²M°£ flash ®Éµo¥Í¿ù»~
+        echo !! æ¸…é™¤ flash æ™‚ç™¼ç”ŸéŒ¯èª¤
         set error="YES"
         goto error_check
     )
@@ -55,12 +43,12 @@ if not "%fname%"=="" (
 )
 if /I "%fname:~0,7%"=="ESP8266" (
     echo -------------------------------------------------
-    echo ¿N¿ı¶´Åé
+    echo ç‡’éŒ„éŸŒé«”
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py -p %port% --baud 460800 write_flash --flash_size=detect -fm dio 0 %fname%
 
     if errorlevel 1 (
-        echo !! ¿N¿ı¶´Åé®Éµo¥Í¿ù»~
+        echo !! ç‡’éŒ„éŸŒé«”æ™‚ç™¼ç”ŸéŒ¯èª¤
         set error="YES"
         goto error_check
     )
@@ -68,59 +56,44 @@ if /I "%fname:~0,7%"=="ESP8266" (
 )
 if /I "%fname:~0,5%"=="ESP32" (
     echo -------------------------------------------------
-    echo ¿N¿ı¶´Åé
+    echo ç‡’éŒ„éŸŒé«”
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py --chip esp32 --port %port% write_flash -z 0x1000 %fname%
 
     if errorlevel 1 (
-        echo !! ¿N¿ı¶´Åé®Éµo¥Í¿ù»~
+        echo !! ç‡’éŒ„éŸŒé«”æ™‚ç™¼ç”ŸéŒ¯èª¤
         set error="YES"
         goto error_check
     )
     echo OK
 )
 
-if not "%test_script%"=="" (
+REM å†çœ‹æœ‰æ²’æœ‰ test é–‹é ­çš„ .py æ¸¬è©¦æª”
+for %%f in (test*.py) do (
     echo -------------------------------------------------
-    echo ´ú¸Õ¶´Åé
+    echo æ¸¬è©¦ç¨‹å¼ï¼š%%f
     echo -------------------------------------------------
-    set error="YES"
-    for /f "tokens=*" %%r in ('.\python\python.exe .\python\scripts\ampy.exe -p %port% run %test_script%') do (
-        echo ´ú¸Õµ{¦¡°õ¦æµ²ªG¡G%%r
-        if "%%r"=="hello" (
+    set error="Yes"
+    for /f "tokens=*" %%r in ('.\python\python.exe .\python\Lib\site-packages\ampy\cli.py -p %port% run %%f') do (
+        echo ^> %%r
+        if "%%r"=="**OK**" (
             set error="NO"
-        )
-    )
+        ) 
+    )    
     if errorlevel 1 set error="YES"
     if "%error%"=="YES" goto error_check
-    echo OK
-)
-
-if not "%wifi_script%"=="" (
-    echo -------------------------------------------------
-    echo ´ú¸Õ Wi-Fi
-    echo -------------------------------------------------
-    set error="YES"
-    for /f "tokens=*" %%r in ('.\python\python.exe .\python\scripts\ampy.exe -p %port% run %wifi_script%') do (
-        if not "%%r"=="" echo %%r
-        if "%%r"=="**success**" (
-            set error="NO"
-        )
-    )
-    if errorlevel 1 set error="YES"
-    if "%error%"=="YES" goto error_check
-    echo OK
+    echo OK.
 )
 
 if exist .\upload (
     echo -------------------------------------------------
-    echo ¤W¶ÇÀÉ®×
+    echo ä¸Šå‚³æª”æ¡ˆ
     echo -------------------------------------------------
     for /R .\upload %%f in (*) do (
-        echo ¤W¶Ç %%f ÀÉ®×
+        echo ä¸Šå‚³ %%f æª”æ¡ˆ
         .\python\python.exe .\python\scripts\ampy.exe -p %port% put %%f
         if errorlevel 1 (
-            echo !! ¤W¶Ç %%f ÀÉ®×®Éµo¥Í¿ù»~
+            echo !! ä¸Šå‚³ %%f æª”æ¡ˆæ™‚ç™¼ç”ŸéŒ¯èª¤
             set error="YES"
             goto error_check
         )
@@ -132,10 +105,10 @@ echo -------------------------------------------------
 
 :error_check
 if %error%=="YES" (
-    set /p dummy="¡I¡I¡I¿N¿ı¥¢±Ñ, ­n¦A¸Õ¤@¦¸½Ğª½±µ«ö Enter... (¿é¤J q Â÷¶})"
+    set /p dummy="ï¼ï¼ï¼ç‡’éŒ„å¤±æ•—, è¦å†è©¦ä¸€æ¬¡è«‹ç›´æ¥æŒ‰ Enter... (è¼¸å…¥ q é›¢é–‹)"
 ) else (
     set /a total=total+1
-    set /p dummy="²Ä !total! ¤ù¿N¿ı§¹¦¨, ½Ğ´«¤U¤@¤ù«á«ö Enter Ä~Äò... (¿é¤J q Â÷¶})"
+    set /p dummy="ç¬¬ !total! ç‰‡ç‡’éŒ„å®Œæˆ, è«‹æ›ä¸‹ä¸€ç‰‡å¾ŒæŒ‰ Enter ç¹¼çºŒ... (è¼¸å…¥ q é›¢é–‹)"
 )
 
 if "%dummy%"=="q" (
@@ -145,5 +118,8 @@ if "%dummy%"=="q" (
 )
 
 :end
+echo ç¸½å…± !total! ç‰‡ç‡’éŒ„å®Œæˆ.
+REM å¾©åŸæˆ big5 ç·¨ç¢¼
+chcp 950
 REM exit batch file
 exit /b 0

@@ -60,7 +60,7 @@ for ap in ap_list:
         print("\n正在連線 " + url)
         ret=urequests.get(url).text
         if checkstr in ret:
-            print("**success**\n" + ret)
+            print("**OK**\n" + ret)
         else:
             raise Exception("在網頁中找不到字串 " + checkstr)
         sta_if.disconnect()
