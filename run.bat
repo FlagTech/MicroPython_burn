@@ -69,9 +69,9 @@ if /I "%fname:~0,5%"=="ESP32" (
 )
 
 REM 再看有沒有 test 開頭的 .py 測試檔
-for %%f in (test*.py) do (
+for %%f in (test_OK*.py) do (
     echo -------------------------------------------------
-    echo 測試程式：%%f
+    echo 測試輸出結果為 **OK** 的程式：%%f
     echo -------------------------------------------------
     set error="Yes"
     for /f "tokens=*" %%r in ('.\python\python.exe .\python\Lib\site-packages\ampy\cli.py -p %port% run %%f') do (
@@ -80,6 +80,18 @@ for %%f in (test*.py) do (
             set error="NO"
         ) 
     )    
+    if errorlevel 1 set error="YES"
+    if "%error%"=="YES" goto error_check
+    echo OK.
+)
+
+REM 再看有沒有 test_raw 開頭的 .py 測試檔
+for %%f in (test_raw*.py) do (
+    echo -------------------------------------------------
+    echo 測試直接輸出的程式：%%f
+    echo -------------------------------------------------
+    set error="No"
+    .\python\python.exe .\python\Lib\site-packages\ampy\cli.py -p %port% run %%f
     if errorlevel 1 set error="YES"
     if "%error%"=="YES" goto error_check
     echo OK.
