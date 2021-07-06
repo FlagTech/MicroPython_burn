@@ -144,7 +144,7 @@ def screen_shot():   # 0x28:ENTER    0x46:Print Scrn
         ble.gatts_notify(conn_handle, h_rep, b"\x00\x00\x00\x00\x00\x00\x00\x00")
         return True
     else:
-        print("沒連線")
+        print("Not connected")
         return False
     
 from machine import Pin
@@ -171,9 +171,8 @@ while True:
     # 前一次沒按 且 這次有按
     if(last_staUp == 1 and staUp == 0):
         blst = screen_shot()
-        print("截圖")
+        print("Screen Shot")
         if(blst == True):
-            print("**OK**")
             break
     # 紀錄前一次狀態
     last_staUp = staUp
