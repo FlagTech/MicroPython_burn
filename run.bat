@@ -68,6 +68,22 @@ if /I "%fname:~0,5%"=="ESP32" (
     echo OK
 )
 
+if exist .\upload (
+    echo -------------------------------------------------
+    echo 上傳檔案
+    echo -------------------------------------------------
+    for /R .\upload %%f in (*) do (
+        echo 上傳 %%f 檔案
+        .\python\python.exe .\python\scripts\ampy.exe -p %port% put %%f
+        if errorlevel 1 (
+            echo !! 上傳 %%f 檔案時發生錯誤
+            set error="YES"
+            goto error_check
+        )
+    )
+    echo OK
+)
+
 REM 再看有沒有 test 開頭的 .py 測試檔
 for %%f in (test_OK*.py) do (
     echo -------------------------------------------------
@@ -94,23 +110,6 @@ for %%f in (test_raw*.py) do (
     .\python\python.exe .\python\Lib\site-packages\ampy\cli.py -p %port% run %%f
     if errorlevel 1 set error="YES"
     if "%error%"=="YES" goto error_check
-    echo OK.
-)
-
-if exist .\upload (
-    echo -------------------------------------------------
-    echo 上傳檔案
-    echo -------------------------------------------------
-    for /R .\upload %%f in (*) do (
-        echo 上傳 %%f 檔案
-        .\python\python.exe .\python\scripts\ampy.exe -p %port% put %%f
-        if errorlevel 1 (
-            echo !! 上傳 %%f 檔案時發生錯誤
-            set error="YES"
-            goto error_check
-        )
-    )
-    echo OK
 )
 
 echo -------------------------------------------------
