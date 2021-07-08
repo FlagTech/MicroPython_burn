@@ -161,7 +161,7 @@ button_up=Pin(13,Pin.IN,Pin.PULL_UP)
 
 while True:
     hall = esp32.hall_sensor()
-    # print(hall)
+    print("\r{:5d}".format(hall), end="")
     if(hall<150 and hall>-150):
         staUp = 1
         led.value(1)
