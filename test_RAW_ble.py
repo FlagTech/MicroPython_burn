@@ -9,7 +9,7 @@ conph = False
 def ble_irq(event, data):
     global conn_handle,conph
     if event == 1:
-        print("已連線！")
+        print("\n已連線！")
         print("請將磁鐵靠近 ESP32 銀色鐵殼中央區域")
         conn_handle = data[0]
         conph = True
@@ -172,7 +172,7 @@ while True:
     # 前一次沒按 且 這次有按
     if(last_staUp == 1 and staUp == 0):
         blst = screen_shot()
-        print("已截圖")
+        print("\n已截圖")
         if(blst == True):
             break
     # 紀錄前一次狀態
