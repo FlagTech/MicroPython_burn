@@ -9,11 +9,12 @@ conph = False
 def ble_irq(event, data):
     global conn_handle,conph
     if event == 1:
-        print("connected!")
+        print("已連線！")
+        print("請將磁鐵靠近 ESP32 銀色鐵殼中央區域")
         conn_handle = data[0]
         conph = True
     if event == 2:
-        print("disconnected!!!!!!!!!!!!!!!!!!!")
+        print("已斷線！")
         conph = False
     else:
         pass
@@ -108,7 +109,7 @@ adv = (
 )
 conn_handle = None
 ble.gap_advertise(100_000, adv)
-
+print("請用手機藍牙連線 " + name)
 # once connected use the following to send reports
 
 def send_char(char):
@@ -144,7 +145,7 @@ def screen_shot():   # 0x28:ENTER    0x46:Print Scrn
         ble.gatts_notify(conn_handle, h_rep, b"\x00\x00\x00\x00\x00\x00\x00\x00")
         return True
     else:
-        print("Not connected")
+        print("尚未連線！")
         return False
     
 from machine import Pin
@@ -160,7 +161,7 @@ button_up=Pin(13,Pin.IN,Pin.PULL_UP)
 
 while True:
     hall = esp32.hall_sensor()
-    print(hall)
+    # print(hall)
     if(hall<150 and hall>-150):
         staUp = 1
         led.value(1)
@@ -171,7 +172,7 @@ while True:
     # 前一次沒按 且 這次有按
     if(last_staUp == 1 and staUp == 0):
         blst = screen_shot()
-        print("Screen Shot")
+        print("已截圖")
         if(blst == True):
             break
     # 紀錄前一次狀態

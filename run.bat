@@ -1,17 +1,17 @@
 @echo off
-REM æ”¹ç”¨ UTF8 ç·¨ç¢¼
-chcp 65001
+REM §ï¥Î UTF8 ½s½X
+REM chcp 65001
 setlocal EnableDelayedExpansion
 set fname=
 set dummy=
 set /a total = 0
 
-REM å…ˆçœ‹æœ‰æ²’æœ‰ esp8266 é–‹é ­æª”åçš„éŸŒé«”æª”
+REM ¥ı¬İ¦³¨S¦³ esp8266 ¶}ÀYÀÉ¦Wªº¶´ÅéÀÉ
 for %%f in (esp8266*.bin) do (
     set fname=%%f
     goto start
 )
-REM å†çœ‹æœ‰æ²’æœ‰ esp32 é–‹é ­æª”åçš„éŸŒé«”æª”
+REM ¦A¬İ¦³¨S¦³ esp32 ¶}ÀYÀÉ¦Wªº¶´ÅéÀÉ
 for %%f in (esp32*.bin) do (
     set fname=%%f
     goto start
@@ -19,23 +19,23 @@ for %%f in (esp32*.bin) do (
 
 :start
 echo -------------------------------------------------
-echo éŸŒé«”æª”  ï¼š%fname%
-set /p port="è¼¸å…¥é€£æ¥åŸ  (è¼¸å…¥ q é›¢é–‹)ï¼š"
+echo ¶´ÅéÀÉ  ¡G%fname%
+set /p port="¿é¤J³s±µ°ğ (¿é¤J q Â÷¶})¡G"
 if "%port%"=="q" goto end
 
 :next
 
-REM æ¸…é™¤ errorlevel
+REM ²M°£ errorlevel
 (call )
 set error="NO"
 
 if not "%fname%"=="" (
     echo -------------------------------------------------
-    echo æ¸…é™¤ flash
+    echo ²M°£ flash
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py -p %port% erase_flash
     if errorlevel 1 (
-        echo !! æ¸…é™¤ flash æ™‚ç™¼ç”ŸéŒ¯èª¤
+        echo !! ²M°£ flash ®Éµo¥Í¿ù»~
         set error="YES"
         goto error_check
     )
@@ -43,12 +43,12 @@ if not "%fname%"=="" (
 )
 if /I "%fname:~0,7%"=="ESP8266" (
     echo -------------------------------------------------
-    echo ç‡’éŒ„éŸŒé«”
+    echo ¿N¿ı¶´Åé
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py -p %port% --baud 460800 write_flash --flash_size=detect -fm dio 0 %fname%
 
     if errorlevel 1 (
-        echo !! ç‡’éŒ„éŸŒé«”æ™‚ç™¼ç”ŸéŒ¯èª¤
+        echo !! ¿N¿ı¶´Åé®Éµo¥Í¿ù»~
         set error="YES"
         goto error_check
     )
@@ -56,12 +56,12 @@ if /I "%fname:~0,7%"=="ESP8266" (
 )
 if /I "%fname:~0,5%"=="ESP32" (
     echo -------------------------------------------------
-    echo ç‡’éŒ„éŸŒé«”
+    echo ¿N¿ı¶´Åé
     echo -------------------------------------------------
     .\python\python.exe .\python\Scripts\esptool.py --chip esp32 --port %port% write_flash -z 0x1000 %fname%
 
     if errorlevel 1 (
-        echo !! ç‡’éŒ„éŸŒé«”æ™‚ç™¼ç”ŸéŒ¯èª¤
+        echo !! ¿N¿ı¶´Åé®Éµo¥Í¿ù»~
         set error="YES"
         goto error_check
     )
@@ -70,13 +70,13 @@ if /I "%fname:~0,5%"=="ESP32" (
 
 if exist .\upload (
     echo -------------------------------------------------
-    echo ä¸Šå‚³æª”æ¡ˆ
+    echo ¤W¶ÇÀÉ®×
     echo -------------------------------------------------
     for /R .\upload %%f in (*) do (
-        echo ä¸Šå‚³ %%f æª”æ¡ˆ
+        echo ¤W¶Ç %%f ÀÉ®×
         .\python\python.exe .\python\scripts\ampy.exe -p %port% put %%f
         if errorlevel 1 (
-            echo !! ä¸Šå‚³ %%f æª”æ¡ˆæ™‚ç™¼ç”ŸéŒ¯èª¤
+            echo !! ¤W¶Ç %%f ÀÉ®×®Éµo¥Í¿ù»~
             set error="YES"
             goto error_check
         )
@@ -84,10 +84,10 @@ if exist .\upload (
     echo OK
 )
 
-REM å†çœ‹æœ‰æ²’æœ‰ test é–‹é ­çš„ .py æ¸¬è©¦æª”
+REM ¦A¬İ¦³¨S¦³ test ¶}ÀYªº .py ´ú¸ÕÀÉ
 for %%f in (test_OK*.py) do (
     echo -------------------------------------------------
-    echo æ¸¬è©¦è¼¸å‡ºçµæœç‚º **OK** çš„ç¨‹å¼ï¼š%%f
+    echo ´ú¸Õ¿é¥Xµ²ªG¬° **OK** ªºµ{¦¡¡G%%f
     echo -------------------------------------------------
     set error="Yes"
     for /f "tokens=*" %%r in ('.\python\python.exe .\python\Lib\site-packages\ampy\cli.py -p %port% run %%f') do (
@@ -101,10 +101,10 @@ for %%f in (test_OK*.py) do (
     echo OK.
 )
 
-REM å†çœ‹æœ‰æ²’æœ‰ test_raw é–‹é ­çš„ .py æ¸¬è©¦æª”
+REM ¦A¬İ¦³¨S¦³ test_raw ¶}ÀYªº .py ´ú¸ÕÀÉ
 for %%f in (test_raw*.py) do (
     echo -------------------------------------------------
-    echo æ¸¬è©¦ç›´æ¥è¼¸å‡ºçš„ç¨‹å¼ï¼š%%f
+    echo ´ú¸Õª½±µ¿é¥Xªºµ{¦¡¡G%%f
     echo -------------------------------------------------
     set error="No"
     .\python\python.exe .\python\Lib\site-packages\ampy\cli.py -p %port% run %%f
@@ -116,10 +116,10 @@ echo -------------------------------------------------
 
 :error_check
 if %error%=="YES" (
-    set /p dummy="ï¼ï¼ï¼ç‡’éŒ„å¤±æ•—, è¦å†è©¦ä¸€æ¬¡è«‹ç›´æ¥æŒ‰ Enter... (è¼¸å…¥ q é›¢é–‹)"
+    set /p dummy="¡I¡I¡I¿N¿ı¥¢±Ñ, ­n¦A¸Õ¤@¦¸½Ğª½±µ«ö Enter... (¿é¤J q Â÷¶})"
 ) else (
     set /a total=total+1
-    set /p dummy="ç¬¬ !total! ç‰‡ç‡’éŒ„å®Œæˆ, è«‹æ›ä¸‹ä¸€ç‰‡å¾ŒæŒ‰ Enter ç¹¼çºŒ... (è¼¸å…¥ q é›¢é–‹)"
+    set /p dummy="²Ä !total! ¤ù¿N¿ı§¹¦¨, ½Ğ´«¤U¤@¤ù«á«ö Enter Ä~Äò... (¿é¤J q Â÷¶})"
 )
 
 if "%dummy%"=="q" (
@@ -129,8 +129,8 @@ if "%dummy%"=="q" (
 )
 
 :end
-echo ç¸½å…± !total! ç‰‡ç‡’éŒ„å®Œæˆ.
-REM å¾©åŸæˆ big5 ç·¨ç¢¼
-chcp 950
+echo Á`¦@ !total! ¤ù¿N¿ı§¹¦¨.
+REM ´_­ì¦¨ big5 ½s½X
+REM chcp 950
 REM exit batch file
 exit /b 0
