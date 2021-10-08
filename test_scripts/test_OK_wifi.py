@@ -30,6 +30,9 @@ ap_data = {
     "TP-LINK_7BC2A0":  {"passwd": "48559898",
                     "url": "https://flagtech.github.io/flag.txt",
                     "checkstr": "FLAG" },
+    "FlagPub":  {"passwd": "",
+                    "url": "https://flagtech.github.io/flag.txt",
+                    "checkstr": "FLAG" },
 }
 
 for ap in ap_list:
