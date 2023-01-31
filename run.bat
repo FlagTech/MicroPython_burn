@@ -6,14 +6,25 @@ set fname=
 set dummy=
 set /a total = 0
 
+REM 設定韌體檔案的路徑
+set firmware_path=%1
+if "%1"=="" (
+  set irmware_path=.
+  echo 用法：
+  echo    run 韌體檔的路徑 (沒指定預設為目前目錄)
+)
+
+set chip=
 REM 先看有沒有 esp8266 開頭檔名的韌體檔
-for %%f in (esp8266*.bin) do (
+for %%f in (%firmware_path%\esp8266*.bin) do (
     set fname=%%f
+    set chip=ESP8266
     goto start
 )
 REM 再看有沒有 esp32 開頭檔名的韌體檔
-for %%f in (esp32*.bin) do (
+for %%f in (%firmware_path%\esp32*.bin) do (
     set fname=%%f
+    set chip=ESP32
     goto start
 )
 
@@ -41,7 +52,7 @@ if not "!fname!"=="" (
     )
     echo OK
 )
-if /I "!fname:~0,7!"=="ESP8266" (
+if "%chip%"=="ESP8266" (
     echo -------------------------------------------------
     echo 燒錄 ESP8266 韌體
     echo -------------------------------------------------
@@ -54,7 +65,7 @@ if /I "!fname:~0,7!"=="ESP8266" (
     )
     echo OK
 )
-if /I "!fname:~0,5!"=="ESP32" (
+if /I "!chip!"=="ESP32" (
     echo -------------------------------------------------
     echo 燒錄 ESP32 韌體
     echo -------------------------------------------------
@@ -68,11 +79,11 @@ if /I "!fname:~0,5!"=="ESP32" (
     echo OK
 )
 
-if exist .\upload (
+if exist %firmware_path%\upload (
     echo -------------------------------------------------
     echo 上傳檔案
     echo -------------------------------------------------
-    for /R .\upload %%f in (*) do (
+    for /R %firmware_path%\upload %%f in (*) do (
         echo 上傳 %%f 檔案
         .\python\python.exe .\python\scripts\ampy.exe -p !port! put %%f
         if errorlevel 1 (
@@ -85,7 +96,7 @@ if exist .\upload (
 )
 
 REM 再看有沒有 test 開頭的 .py 測試檔
-for %%f in (test_OK*.py) do (
+for %%f in (%firmware_path%\test_OK*.py) do (
     echo -------------------------------------------------
     echo 測試輸出結果為 **OK** 的程式：%%f
     echo -------------------------------------------------
@@ -102,7 +113,7 @@ for %%f in (test_OK*.py) do (
 )
 
 REM 再看有沒有 test_raw 開頭的 .py 測試檔
-for %%f in (test_raw*.py) do (
+for %%f in (%firmware_path%\test_raw*.py) do (
     echo -------------------------------------------------
     echo 測試直接輸出的程式：%%f
     echo -------------------------------------------------
