@@ -1,6 +1,6 @@
 @echo off
 REM 改用 UTF8 編碼
-REM chcp 65001
+REM chcp 65001 > nul
 setlocal EnableDelayedExpansion
 set fname=
 set dummy=
@@ -10,8 +10,6 @@ REM 設定韌體檔案的路徑
 set firmware_path=%1
 if "%1"=="" (
   set irmware_path=.
-  echo 用法：
-  echo    run 韌體檔的路徑 (沒指定預設為目前目錄)
 )
 
 set chip=
@@ -26,6 +24,14 @@ for %%f in (%firmware_path%\esp32*.bin) do (
     set fname=%%f
     set chip=ESP32
     goto start
+)
+
+if "%fname%"=="" (
+  echo 找不到韌體檔！
+  echo 用法：
+  echo    run 韌體檔的路徑 ^(沒指定預設為目前目錄^)
+  set /p key="請按 Enter 結束。"
+  goto end
 )
 
 :start
@@ -127,7 +133,7 @@ echo -------------------------------------------------
 
 :error_check
 if !error!=="YES" (
-    set /p dummy="！！！燒錄失敗, 要再試一次請直接按 Enter... (輸入 q 離開)"
+    set /p dummy="！！！燒錄失敗, 要再試一次請直接按 Enter... (輸入 q 離開"
 ) else (
     set /a total=total+1
     set /p dummy="第 !total! 片燒錄完成, 請換下一片後按 Enter 繼續... (輸入 q 離開)"
@@ -142,6 +148,6 @@ if "!dummy!"=="q" (
 :end
 echo 總共 !total! 片燒錄完成.
 REM 復原成 big5 編碼
-REM chcp 950
+REM chcp 950 > nul
 REM exit batch file
 exit /b 0
