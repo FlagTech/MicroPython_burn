@@ -75,7 +75,7 @@ if /I "!chip!"=="ESP32" (
     echo -------------------------------------------------
     echo 燒錄 ESP32 韌體
     echo -------------------------------------------------
-    .\python\python.exe .\python\Scripts\esptool.py --chip esp32 --port !port! write_flash -z 0x1000 !fname!
+    .\python\python.exe .\python\Scripts\esptool.py --chip esp32 --port !port! --baud 460800 write_flash -z 0x1000 !fname!
 
     if errorlevel 1 (
         echo !! 燒錄韌體時發生錯誤
